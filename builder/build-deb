@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+
+cd "$(dirname "$0")/.."
+. builder/os_ver_cli.sh
+. builder/scripts/output_owner.sh
+
+select_consistent_output_owner_uid_and_gid
+
+builder_image=debbuilder_${os}:${os_codename}${build_tag_for_images}
+docker build --build-arg OUTPUT_OWNER_UID="$output_owner_uid" \
+  -t "$builder_image" -f \
+  builder/dockerfile.${os}_${os_codename}${build_tag}.deb.build .
+
+deb_output_dir=$(cd .. && echo $PWD)
+
+docker run --rm -v "$deb_output_dir":/src -e BUILD_TAG="$build_tag" \
+  --user "$output_owner_uid:$output_owner_gid" \
+  "$builder_image" /bin/bash -c \
+  '/src/*/builder/build-deb-inside-docker'

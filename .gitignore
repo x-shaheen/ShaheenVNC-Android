@@ -1,0 +1,49 @@
+# Android
+.gradle/
+build/
+*/build/
+local.properties
+
+# Android Studio
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# APK / AAB
+*.apk
+*.aab
+
+# Signing / secrets
+*.jks
+*.keystore
+*.key
+*.p12
+*.pfx
+*.pem
+
+# Environment / credentials
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+
+# Node
+node_modules/
+
+# KasmVNC generated/build output
+xorg.build/
+build-output/
+dist/

@@ -1,0 +1,17 @@
+FROM fedora:43
+
+ENV KASMVNC_BUILD_OS fedora
+ENV KASMVNC_BUILD_OS_CODENAME 43
+
+RUN dnf install -y fedora-packager fedora-review
+RUN dnf install -y tree vim less
+RUN dnf install -y dnf-plugins-core
+
+COPY fedora/*.spec /tmp
+RUN dnf builddep -y /tmp/*.spec
+
+ENV SCRIPTS_DIR=/tmp/scripts
+COPY builder/scripts $SCRIPTS_DIR
+
+ARG OUTPUT_OWNER_UID
+RUN $SCRIPTS_DIR/add-docker-user "$OUTPUT_OWNER_UID"

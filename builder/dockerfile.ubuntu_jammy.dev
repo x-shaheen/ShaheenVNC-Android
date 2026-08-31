@@ -1,0 +1,107 @@
+FROM kasmweb/ubuntu-jammy-desktop:develop
+
+ENV KASMVNC_BUILD_OS ubuntu
+ENV KASMVNC_BUILD_OS_CODENAME jammy
+ENV XORG_VER 21.1.3
+ENV XORG_PATCH 21
+ENV DEBIAN_FRONTEND noninteractive
+
+EXPOSE 6901
+EXPOSE 22
+
+USER root
+
+COPY builder/conf/nginx_kasm.conf /etc/nginx/conf.d/
+
+RUN sed -i 's$# deb-src$deb-src$' /etc/apt/sources.list && \
+    apt update && \
+    apt install -y \
+    ninja-build \
+    gdb \
+    valgrind \
+    rsync \
+    dos2unix \
+    socat \
+    sudo \
+    libxfont-dev \
+    cmake \
+    nasm \
+    git \
+    libgnutls28-dev \
+    vim \
+    wget \
+    tightvncserver \
+    curl \
+    libpng-dev \
+    libtiff-dev \
+    libgif-dev \
+    libavformat-dev \
+    libavcodec-dev \
+    libswscale-dev \
+    libssl-dev \
+    libxrandr-dev \
+    libxcursor-dev \
+    pkg-config \
+    libfreetype6-dev \
+    libxtst-dev \
+    autoconf \
+    automake \
+    libtool \
+    xutils-dev \
+    libpixman-1-dev \
+    libxshmfence-dev \
+    libxcvt-dev \
+    libxkbfile-dev \
+    x11proto-dev \
+    libgbm-dev \
+    libdrm-dev \
+    htop \
+    libva-dev \
+    libpam0g-dev \
+    libbsd-dev \
+    openssh-server \
+    inotify-tools \
+    libgl1-mesa-dev \
+    libglu1-mesa-dev \
+    mesa-common-dev
+
+RUN echo "kasm-user  ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    mkdir -p /var/run/sshd && \
+    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+RUN apt install -y nodejs nginx
+
+# x86_64 specific operations
+# Packages required for VA-API hardware acceleration (Mesa + Intel)
+RUN if [ "$(arch)" = "x86_64" ]; then \
+        apt-get update && apt-get install -y vainfo mesa-va-drivers mesa-vulkan-drivers \
+            intel-media-va-driver-non-free; \
+    fi
+
+# Note: do NOT bake `ENV SCRIPTS_DIR=/tmp/scripts`. build.sh resolves its helper
+# scripts via $SCRIPTS_DIR and defaults to its own dir (/src/builder/scripts) when
+# unset — i.e. the live, bind-mounted repo copy. A persistent ENV would pin it to
+# these baked, soon-stale copies.
+COPY builder/scripts /tmp/scripts
+RUN /tmp/scripts/install_sccache_from_github
+RUN /tmp/scripts/build-deps.sh
+
+RUN chown -R 1000:1000 /home/kasm-user/.local && \
+    rm -rf /tmp/libjpeg-turbo /tmp/libwebp-* /tmp/tbb /tmp/cpuid /tmp/fmt /tmp/libyuv /tmp/libstatgrab /tmp/sccache*
+
+RUN ssh-keygen -A
+RUN echo "kasm-user:password" | chpasswd
+
+USER 1000
+
+RUN mkdir ~/.vnc
+RUN openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout ${HOME}/.vnc/self.pem -out ${HOME}/.vnc/self.pem -subj "/C=US/ST=VA/L=None/O=None/OU=DoFu/CN=kasm/emailAddress=none@none.none"
+
+WORKDIR /src
+
+# `exec "$@"` so a non-interactive `docker run ... kasmvnc:dev bash -lc '...'`
+# actually runs the passed command (sshd still starts). With no args, CMD gives
+# `docker run -it` an interactive login shell.
+ENTRYPOINT ["/bin/bash", "-c", "sudo /usr/sbin/sshd && exec \"$@\"", "--"]
+CMD ["/bin/bash", "-l"]

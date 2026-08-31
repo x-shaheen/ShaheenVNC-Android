@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">KasmVNC</string>
+    <string name="app_description">Remote Desktop Client for KasmVNC Server</string>
+    
+    <!-- Main screen -->
+    <string name="my_servers">My Servers</string>
+    <string name="add_server">+ Add Server</string>
+    <string name="connect">CONNECT</string>
+    <string name="connecting">Connecting…</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="reconnecting">Reconnecting…</string>
+    <string name="connection_error">Connection Error</string>
+    <string name="no_servers">No servers configured. Add one to get started.</string>
+    <string name="edit_server">Edit</string>
+    <string name="delete_server">Delete</string>
+    <string name="confirm_delete">Are you sure you want to delete this server?</string>
+    
+    <!-- Add/Edit server screen -->
+    <string name="connection_name">Connection Name</string>
+    <string name="server_url">Server URL</string>
+    <string name="use_https">Use HTTPS</string>
+    <string name="use_https_summary">Secure connection (recommended)</string>
+    <string name="fullscreen_by_default">Fullscreen by default</string>
+    <string name="auto_connect">Auto-connect on startup</string>
+    <string name="save_server">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="invalid_url">Invalid server URL</string>
+    <string name="invalid_connection_name">Connection name cannot be empty</string>
+    <string name="url_format_hint">Format: https://example.com:8443</string>
+    
+    <!-- Remote session screen -->
+    <string name="keyboard">⌨ Keyboard</string>
+    <string name="mouse">🖱 Mouse</string>
+    <string name="touchpad">Touchpad</string>
+    <string name="settings">⚙</string>
+    <string name="fullscreen_toggle">⛶</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="reconnect">Reconnect</string>
+    <string name="session_disconnected">Session disconnected</string>
+    <string name="tap_to_show_controls">Tap to show controls</string>
+    
+    <!-- Input controls -->
+    <string name="ctrl">Ctrl</string>
+    <string name="alt">Alt</string>
+    <string name="shift">Shift</string>
+    <string name="meta">Meta</string>
+    <string name="escape">Esc</string>
+    <string name="tab">Tab</string>
+    <string name="enter">Enter</string>
+    <string name="backspace">Backspace</string>
+    <string name="copy">Copy</string>
+    <string name="paste">Paste</string>
+    
+    <!-- Error messages -->
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="error_ssl_certificate">SSL certificate verification failed</string>
+    <string name="error_timeout">Connection timeout</string>
+    <string name="error_invalid_server">Invalid server address</string>
+    <string name="error_unauthorized">Authentication failed</string>
+    <string name="error_websocket">WebSocket connection failed</string>
+    
+    <!-- Permissions -->
+    <string name="permission_clipboard">Allow access to clipboard</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="zoom_level">Zoom Level</string>
+    <string name="scale_to_fit">Scale to Fit</string>
+    <string name="actual_size">Actual Size</string>
+    <string name="touch_mode">Touch Mode</string>
+    <string name="direct_touch">Direct Touch</string>
+    <string name="virtual_mouse">Virtual Mouse</string>
+    
+    <!-- About -->
+    <string name="about">About</string>
+    <string name="version">Version</string>
+    <string name="copyright">© Kasm Technologies</string>
+</resources>

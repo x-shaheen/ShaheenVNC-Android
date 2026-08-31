@@ -1,0 +1,69 @@
+FROM opensuse/leap:16.0
+
+ENV KASMVNC_BUILD_OS opensuse
+ENV KASMVNC_BUILD_OS_CODENAME 16
+ENV XORG_VER 21.1.15
+
+# Install depends
+RUN sed -i 's|cdn.opensuse.org|downloadcontent.opensuse.org|g' \
+      /etc/zypp/repos.d/*.repo \
+      /usr/share/zypp/local/service/openSUSE/repo/*.xml && \
+  zypper refresh && \
+  zypper install -ny \
+  bdftopcf \
+  ninja \
+  nasm \
+  curl \
+  ffmpeg-4-libavcodec-devel \
+  ffmpeg-4-libswscale-devel \
+  ffmpeg-4-libavformat-devel \
+  fonttosfnt \
+  font-util \
+  gcc15 \
+  gcc15-c++ \
+  cmake \
+  sccache \
+  giflib-devel \
+  git \
+  gzip \
+  libbz2-devel \
+  libgbm-devel \
+  libgnutls-devel \
+  libopenssl-devel \
+  libpng16-devel \
+  libpnglite0 \
+  png++-devel \
+  libtiff-devel \
+  libXfont2-devel \
+  libxkbcommon-x11-devel \
+  libxshmfence-devel \
+  make \
+  Mesa-dri \
+  Mesa-libglapi-devel \
+  Mesa-libGL-devel \
+  mkfontscale \
+  patch \
+  tigervnc \
+  wget \
+  libXcursor-devel \
+  libXrandr-devel \
+  libXtst-devel \
+  libX11-devel \
+  xorgproto-devel \
+  xorg-x11-util-devel \
+  xorg-x11-server-sdk \
+  xorg-x11-util-devel \
+  zlib-devel \
+  libva-devel
+
+RUN ln -s /usr/bin/gcc-15 /usr/local/bin/gcc && ln -s /usr/bin/g++-15 /usr/local/bin/g++
+
+ENV SCRIPTS_DIR=/tmp/scripts
+COPY builder/scripts $SCRIPTS_DIR
+
+ARG OUTPUT_OWNER_UID
+RUN $SCRIPTS_DIR/add-docker-user "$OUTPUT_OWNER_UID"
+
+COPY --chown=$OUTPUT_OWNER_UID . /src/
+
+ENTRYPOINT ["bash", "-l", "-c", "/src/builder/build.sh"]

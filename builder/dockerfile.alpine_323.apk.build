@@ -1,0 +1,17 @@
+FROM alpine:3.23
+
+RUN apk add shadow bash
+RUN apk add abuild sudo less ffmpeg-dev
+
+ENV HOME /src/alpine
+WORKDIR $HOME/kasmvncserver
+
+ARG KASMVNC_ALPINE_PRIVATE_KEY
+ARG KASMVNC_ALPINE_PUBLIC_KEY
+
+ENV SCRIPTS_DIR=/tmp/scripts
+COPY builder/scripts $SCRIPTS_DIR
+RUN $SCRIPTS_DIR/install_alpine_signing_keys
+
+ARG OUTPUT_OWNER_UID
+RUN $SCRIPTS_DIR/add-docker-user "$OUTPUT_OWNER_UID"

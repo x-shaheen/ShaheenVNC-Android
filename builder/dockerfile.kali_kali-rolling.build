@@ -1,0 +1,48 @@
+FROM kalilinux/kali-rolling:latest
+
+ENV KASMVNC_BUILD_OS kali
+ENV KASMVNC_BUILD_OS_CODENAME kali-rolling
+ENV XORG_VER 21.1.14
+ENV DEBIAN_FRONTEND noninteractive
+ENV CXXFLAGS="-Wno-stringop-overflow"
+ENV CFLAGS="-Wno-stringop-overflow"
+
+RUN find /etc/apt/sources.list.d/ -name "*.sources" | xargs -r sed -i 's/^Types: deb$/Types: deb deb-src/'; \
+    { [ -f /etc/apt/sources.list ] && grep '^deb ' /etc/apt/sources.list 2>/dev/null; \
+      find /etc/apt/sources.list.d/ -name "*.list" -exec grep -h '^deb ' {} \; 2>/dev/null; } | \
+    sed 's/^deb /deb-src /' >> /etc/apt/sources.list.d/kali-deb-src.list; true
+
+RUN apt-get update && \
+      apt-get -y install sudo
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata
+RUN apt-get update && apt-get -y build-dep xorg-server libxfont-dev
+RUN apt-get update && apt-get -y install gcc g++ curl ca-certificates && update-ca-certificates
+RUN apt-get update && apt-get -y install ninja-build nasm git libgnutls28-dev vim wget tightvncserver
+RUN apt-get update && apt-get -y install libpng-dev libtiff-dev libgif-dev libavcodec-dev libssl-dev libxrandr-dev \
+    libxcursor-dev libavformat-dev libswscale-dev libva-dev libcrypt-dev
+
+RUN ARCH=$(arch) && \
+  CMAKE_URL="https://cmake.org/files/v3.22/cmake-3.22.0" && \
+  if [ "$ARCH" = "x86_64" ]; then \
+      CMAKE_URL="${CMAKE_URL}-linux-x86_64.sh"; \
+  elif [ "$ARCH" = "aarch64" ]; then \
+      CMAKE_URL="${CMAKE_URL}-linux-aarch64.sh"; \
+  else \
+      echo "Unsupported architecture: $ARCH" && exit 1; \
+  fi && \
+  curl -fsSL $CMAKE_URL -o cmake.sh && \
+  (echo y; echo n) | bash cmake.sh --prefix=/usr/local --skip-license && \
+  rm cmake.sh
+
+ENV SCRIPTS_DIR=/tmp/scripts
+COPY builder/scripts $SCRIPTS_DIR
+
+RUN $SCRIPTS_DIR/install_sccache_from_github
+
+ARG OUTPUT_OWNER_UID
+RUN $SCRIPTS_DIR/add-docker-user "$OUTPUT_OWNER_UID"
+
+COPY --chown=$OUTPUT_OWNER_UID . /src/
+
+ENTRYPOINT ["/src/builder/build.sh"]

@@ -1,0 +1,66 @@
+# Gradle
+.gradle/
+build/
+gradle-app.setting
+gradlew
+gradlew.bat
+
+# Android Studio
+.idea/
+*.iml
+*.iws
+*.ipr
+.DS_Store
+captures/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Output files
+*.apk
+*.ap_
+*.dex
+*.class
+*.jar
+*.aar
+*.zip
+*.tar.gz
+
+# Lint files
+lint-results.xml
+lint-results-debug.html
+lint-results.sarif
+
+# Keystore files
+*.jks
+*.keystore
+*.p12
+
+# Android device specific files
+.android/
+
+# Python virtualenv
+venv/
+.venv/
+env/
+
+# IDE specific files
+.vscode/
+.classpath
+.project
+.settings/
+
+# Node modules (if needed for web assets)
+node_modules/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+
+# Native and packaged build outputs
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab

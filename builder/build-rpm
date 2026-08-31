@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e
+
+warn_build_tag_not_supported_for_rpm_and_exit() {
+  local build_tag="$1"
+
+  if [[ -n "$build_tag" ]]; then
+    echo >&2 "<build_tag> isn't supported for rpm"
+    exit 1
+  fi
+}
+
+cd "$(dirname "$0")/.."
+. builder/os_ver_cli.sh
+. builder/scripts/output_owner.sh
+warn_build_tag_not_supported_for_rpm_and_exit "$build_tag"
+
+select_consistent_output_owner_uid_and_gid
+
+docker build -t kasmvnc_rpmbuilder_${os}:${os_codename} \
+  --build-arg OUTPUT_OWNER_UID="$output_owner_uid" \
+  -f builder/dockerfile.${os}_${os_codename}.rpm.build .
+
+source_dir=$(echo $PWD)
+docker run --rm -v "$source_dir":/src \
+  --user "$output_owner_uid:$output_owner_gid" \
+  kasmvnc_rpmbuilder_${os}:${os_codename} /bin/bash -c \
+  '/src/builder/build-rpm-inside-docker'
