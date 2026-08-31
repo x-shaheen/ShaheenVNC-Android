@@ -47,3 +47,35 @@ node_modules/
 xorg.build/
 build-output/
 dist/
+
+# Android / Gradle
+.gradle/
+**/.gradle/
+**/build/
+local.properties
+
+# APK files
+*.apk
+
+# Logs
+*.log
+
+# Backups
+*.bak
+*.backup
+*.backup.*
+*.before_*
+*.old
+
+# Node
+node_modules/
+
+# Termux temporary files
+*.tmp
+*.cache
+
+# Diagnostic output
+ShaheenVNC-DIAG-*/
+ShaheenVNC-runtime-*.log
+ShaheenVNC-summary-*.txt
+
