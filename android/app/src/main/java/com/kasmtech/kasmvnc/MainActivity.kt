@@ -25,16 +25,18 @@ class MainActivity : ComponentActivity() {
         try {
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
+            // Register back press callback using OnBackPressedDispatcher
+            // This is the modern, lifecycle-safe approach (compatible with Android 5+)
+            onBackPressedDispatcher.addCallback(this) {
+                moveTaskToBack(true)
+            }
+
             setContent {
                 ShaheenVNCApp()
             }
         } catch (exception: Exception) {
             exception.printStackTrace()
         }
-    }
-
-    override fun onBackPressed() {
-        moveTaskToBack(true)
     }
 }
 
